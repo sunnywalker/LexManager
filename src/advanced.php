@@ -16,13 +16,13 @@
 
 	//////
 	// advanced.php
-	// 
+	//
 	// Purpose: Provides a more advanced database query interface for more refined searches.
-	// Inputs: 
+	// Inputs:
 	//     'i' (GET, mandatory): the index of the lexicon in the "lexinfo" table
 	//
 	//////
-	
+
 	// Import configuration
 	if(!file_exists('cfg/lex_config.php')) {
 		die("<p class=\"statictext warning\">Error: Missing configuration file</p>");
@@ -37,7 +37,7 @@
 
 	// Ensure mandatory GET inputs are set, else end execution
 	if(isset($_GET['i'])) {
-		$lexIndex = mysql_real_escape_string($_GET['i']);		   
+		$lexIndex = mysql_real_escape_string($_GET['i']);
 	} else {
 		die('<p class=\"statictext warning\">Error: No index provided.</p>');
 	}
@@ -52,11 +52,11 @@
 	<head>
     	<title><?php echo($curLex); ?> Lexicon</title>
         <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-		<link rel="stylesheet" type="text/css" href="res/lex_core.css">
-        <link rel="shortcut icon" type="image/vnd.microsoft.icon" href="res/favicon.ico">
-        <link rel="apple-touch-icon" href="res/apple-touch-icon.png">
+		<link rel="stylesheet" type="text/css" href="css/lex_core.css">
+        <link rel="shortcut icon" type="image/vnd.microsoft.icon" href="images/favicon.ico">
+        <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
 		<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
-        <script type="text/javascript" src="res/lex.js"></script>
+        <script type="text/javascript" src="js/lex.js"></script>
     </head>
     <body>
     	<div id="lexindex"><?php echo($lexIndex); ?></div>

@@ -16,13 +16,13 @@
 
 	//////
 	// adm_newlexicon.php
-	// 
+	//
 	// Purpose: Present a series of forms to allow the administrator to create a new lexicon
-	// Inputs: 
+	// Inputs:
 	//     multiple (POST, optional): the new data submitted to replace the current row
 	//
 	//////
-	
+
 	// Check if user is logged in
 	session_start();
 	if($_SESSION['LM_login'] !== "1") {
@@ -35,7 +35,7 @@
 	} else {
 		include('cfg/lex_config.php');
 	}
-	
+
 	// Connect to MySQL database
     $dbLink = mysql_connect($LEX_serverName, $LEX_adminUser, $LEX_adminPassword);
     @mysql_select_db($LEX_databaseName) or die("      <p class=\"statictext warning\">Unable to connect to database.</p>\n");
@@ -49,7 +49,7 @@
 		$collation = mysql_real_escape_string($_POST['collation']);
 		$fieldTypes = str_replace("\r", "", $_POST['fieldTypes']);
 		$fieldLabels = str_replace("\r", "", $_POST['fieldLabels']);
-		
+
 		// Explode the field type and label variables to create two parallel arrays
 		$explodedFieldTypes = explode("\n", $fieldTypes);
 		$explodedFieldLabels = explode("\n", $fieldLabels);
@@ -62,7 +62,7 @@
 		}
 		// Store the new lexicon's configuration information in 'lexinfo'
 		mysql_query("INSERT INTO `lexinfo` (`Name`, `Alphabet`, `Collation`, `Count`, `FieldTypes`, `FieldLabels`, `SearchableFields`, `DateCreated`, `DateChanged`) VALUES ('" . $lang . "', '" . $alphabet . "', '" . $collation . "', 0, '" . mysql_real_escape_string($fieldTypes) . "', '" . mysql_real_escape_string($fieldLabels) . "', 'Word', NOW(), NOW());");
-		
+
 		// Create a SQL create table command by iterating over each field and its corresponding field type
 		$tableStructureStr = "";
 		foreach($explodedFieldTypes as $key => $value) {
@@ -81,7 +81,7 @@
 			}
 		}
 		mysql_query("CREATE TABLE `" . $lang . "` (" . $tableStructureStr . ", PRIMARY KEY (`Index_ID`)) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;");
-		
+
 		// Create a formatting table for the new lexicon to store CSS information and fill it with default values
 		// CSS styles not applicable for a given field are left NULL
 		mysql_query("CREATE TABLE `" . $lang . "-styles` (`Index_ID` int(3) NOT NULL AUTO_INCREMENT, `Name` varchar(255), `FontFamily` varchar(64), `FontSize` varchar(64), `FontColor` varchar(64), `Bold` bool, `Italic` bool, `Underline` bool, `SmallCaps` bool, `Label` bool, `BulletType` varchar(64), PRIMARY KEY(`Index_ID`)) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;");
@@ -107,13 +107,13 @@
 	<head>
     	<title>LexManager Administration</title>
         <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-		<link rel="stylesheet" type="text/css" href="res/lex_core.css">
-        <link rel="shortcut icon" type="image/vnd.microsoft.icon" href="res/favicon.ico">
-        <link rel="apple-touch-icon" href="res/apple-touch-icon.png">
+		<link rel="stylesheet" type="text/css" href="css/lex_core.css">
+        <link rel="shortcut icon" type="image/vnd.microsoft.icon" href="images/favicon.ico">
+        <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
 		<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
         <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
-        <script type="text/javascript" src="res/lex.js"></script>
-        <script type="text/javascript" src="res/admin.js"></script>
+        <script type="text/javascript" src="js/lex.js"></script>
+        <script type="text/javascript" src="js/amin.js"></script>
     </head>
     <body>
     	<div id="content">
@@ -133,7 +133,7 @@
                         $queryReply = mysql_query("SELECT `Index_ID`, `Name` FROM `lexinfo` ORDER BY `Name`;");
                         $numTables = @mysql_num_rows($queryReply);
                         $displayBuf = "";
-						
+
 						// Display list of lexicons with links to their individual administration pages
 						if(!$numTables) {
 							echo("<p>No lexicons found.</p>\n");
@@ -151,7 +151,7 @@
                 	<?php
 						if(isset($_POST['submit'])) {
 							// If data was submitted, output confirmation
-							echo("<p>A new lexicon has been created for '" . $lang . "'. Select it on the list to the left to get started!</p>");						
+							echo("<p>A new lexicon has been created for '" . $lang . "'. Select it on the list to the left to get started!</p>");
 						} else {
 							// If no data was submitted, generate the New Lexicon form
 							// The form consists of three virtual pages (actually a single page) managed by JavaScript in admin.js
@@ -252,7 +252,7 @@
 											<div class="onefield_break"></div>
 										</div>
 									</div>
-									
+
 									<input type="button" id="addfield" value="Add Field">
 									<input type="button" class="next" id="toCollation" value="Next &gt;">
 								</fieldset>

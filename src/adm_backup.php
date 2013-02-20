@@ -16,11 +16,11 @@
 
 	//////
 	// adm_backup.php
-	// 
+	//
 	// Purpose: Present the administrator with options to export the tables used by LexManager
 	// Inputs: none
 	//////
-	
+
 	// Check if user is logged in
 	session_start();
 	if($_SESSION['LM_login'] !== "1") {
@@ -29,7 +29,7 @@
 
 	// Import configuration
 	include('cfg/lex_config.php');
-	
+
 	// Connect to MySQL database
     $dbLink = mysql_connect($LEX_serverName, $LEX_adminUser, $LEX_adminPassword);
     @mysql_select_db($LEX_databaseName) or die("      <p class=\"statictext warning\">Unable to connect to database.</p>\n");
@@ -40,12 +40,12 @@
 	<head>
     	<title>LexManager Administration</title>
         <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-		<link rel="stylesheet" type="text/css" href="res/lex_core.css">
-        <link rel="shortcut icon" type="image/vnd.microsoft.icon" href="res/favicon.ico">
-        <link rel="apple-touch-icon" href="res/apple-touch-icon.png">
+		<link rel="stylesheet" type="text/css" href="css/lex_core.css">
+        <link rel="shortcut icon" type="image/vnd.microsoft.icon" href="images/favicon.ico">
+        <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
 		<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
-        <script type="text/javascript" src="res/lex.js"></script>
-        <script type="text/javascript" src="res/admin.js"></script>
+        <script type="text/javascript" src="js/lex.js"></script>
+        <script type="text/javascript" src="js/amin.js"></script>
     </head>
     <body>
     	<div id="content">
@@ -65,7 +65,7 @@
                         $queryReply = mysql_query("SELECT `Index_ID`, `Name` FROM `lexinfo` ORDER BY `Name`;");
                         $numTables = @mysql_num_rows($queryReply);
                         $displayBuf = "";
-						
+
 						// Display list of lexicons with links to their individual administration pages
 						if(!$numTables) {
 							echo("<p>No lexicons found.</p>\n");

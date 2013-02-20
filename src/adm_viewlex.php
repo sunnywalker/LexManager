@@ -16,13 +16,13 @@
 
 	//////
 	// adm_viewlex.php
-	// 
+	//
 	// Purpose: The main administration page for a lexicon, showing basic information
-	// Inputs: 
+	// Inputs:
 	//     'i' (GET, mandatory): the index of the lexicon in the "lexinfo" table
 	//
 	//////
-	
+
 	// Check if user is logged in
 	session_start();
 	if($_SESSION['LM_login'] !== "1") {
@@ -43,7 +43,7 @@
 
 	// Ensure mandatory GET inputs are set, else end execution
 	if(isset($_GET['i'])) {
-		$lexIndex = $_GET['i'];		   
+		$lexIndex = $_GET['i'];
 	} else {
 		die('<p class=\"statictext warning\">Error: No index provided.</p>');
 	}
@@ -53,11 +53,11 @@
 	<head>
     	<title>LexManager Administration</title>
         <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-		<link rel="stylesheet" type="text/css" href="res/lex_core.css">
-        <link rel="shortcut icon" type="image/vnd.microsoft.icon" href="res/favicon.ico">
-        <link rel="apple-touch-icon" href="res/apple-touch-icon.png">
+		<link rel="stylesheet" type="text/css" href="css/lex_core.css">
+        <link rel="shortcut icon" type="image/vnd.microsoft.icon" href="images/favicon.ico">
+        <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
 		<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
-        <script type="text/javascript" src="res/lex.js"></script>
+        <script type="text/javascript" src="js/lex.js"></script>
     </head>
     <body>
     	<div id="content">
@@ -98,7 +98,7 @@
 	                            $langID = mysql_result($queryReply, $i, 'Index_ID');
 								$langName = mysql_result($queryReply, $i, 'Name');
 	                            $displayBuf .= "<p><a href=\"adm_viewlex.php?i=" . $langID . "\" class=\"lexlink\">" . $langName . "</a></p>\n";
-								
+
 								if($langID == $lexIndex) {
 									$curLex = $langName;
 								}

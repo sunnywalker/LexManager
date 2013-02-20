@@ -16,12 +16,12 @@
 
 	//////
 	// manager.php
-	// 
+	//
 	// Purpose: The main entry point of the administrator to manage LexManager
 	// Inputs: none
 	//
 	//////
-	
+
 	// Check if user is logged in
 	session_start();
 	if($_SESSION['LM_login'] !== "1") {
@@ -45,11 +45,11 @@
 	<head>
     	<title>LexManager Administration</title>
         <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-		<link rel="stylesheet" type="text/css" href="res/lex_core.css">
-        <link rel="shortcut icon" type="image/vnd.microsoft.icon" href="res/favicon.ico">
-        <link rel="apple-touch-icon" href="res/apple-touch-icon.png">
+		<link rel="stylesheet" type="text/css" href="css/lex_core.css">
+        <link rel="shortcut icon" type="image/vnd.microsoft.icon" href="images/favicon.ico">
+        <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
 		<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
-        <script type="text/javascript" src="res/lex.js"></script>
+        <script type="text/javascript" src="js/lex.js"></script>
     </head>
     <body>
     	<div id="content">
@@ -91,7 +91,7 @@
 						// If no lexicons have yet been created, display a prompt guiding the administrator to the New Lexicon page
 						if(!$numTables) {
 							$displayBuf = "<p class=\"warning\">It appears you have no lexicons set up. If you would like to set up a new lexicon, please select \"New Lexicon\" above. If you believe this message is in error, check your MySQL and LexManager configurations.</p>";
-							
+
 							echo($displayBuf);
 						}
 					?>

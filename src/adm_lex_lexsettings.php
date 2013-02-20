@@ -16,32 +16,32 @@
 
 	//////
 	// adm_lex_lexsettings.php
-	// 
+	//
 	// Purpose: Open lexicon formatting and display settings and allow the administrator to make changes
-	// Inputs: 
+	// Inputs:
 	//     'i' (GET, mandatory): the index of the lexicon in the "lexinfo" table
 	//     multiple (POST, optional): the new data submitted to replace the current display settings
 	//
 	//////
-	
+
 	// Check if user is logged in
 	session_start();
 	if($_SESSION['LM_login'] !== "1") {
 		header("Location: adm_login.php");
 	}
-	
+
 	// Import configuration
 	if(!file_exists('cfg/lex_config.php')) {
 		die("<p class=\"statictext warning\">You are missing a configuration file. You must have a valid configuration file to use LexManager. Go to the <a href=\"adm_setup.php\">Configuration Setup</a> page to create one.</p>");
 	} else {
 		include('cfg/lex_config.php');
 	}
-	
+
 	// Connect to MySQL database
 	$dbLink = mysql_connect($LEX_serverName, $LEX_adminUser, $LEX_adminPassword);
     @mysql_select_db($LEX_databaseName) or die("      <p class=\"statictext warning\">Unable to connect to database.</p>\n");
     $charset = mysql_query("SET NAMES utf8");
-    
+
 	// Ensure mandatory GET inputs are set, else end execution
 	if(isset($_GET['i'])) {
 		$lexIndex = $_GET['i'];
@@ -54,12 +54,12 @@
 	<head>
     	<title>LexManager Administration</title>
         <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-		<link rel="stylesheet" type="text/css" href="res/lex_core.css">
-        <link rel="shortcut icon" type="image/vnd.microsoft.icon" href="res/favicon.ico">
-        <link rel="apple-touch-icon" href="res/apple-touch-icon.png">
+		<link rel="stylesheet" type="text/css" href="css/lex_core.css">
+        <link rel="shortcut icon" type="image/vnd.microsoft.icon" href="images/favicon.ico">
+        <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
 		<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
-        <script type="text/javascript" src="res/lex.js"></script>
-        <script type="text/javascript" src="res/admin.js"></script>
+        <script type="text/javascript" src="js/lex.js"></script>
+        <script type="text/javascript" src="js/amin.js"></script>
     </head>
     <body>
     	<div id="content">
@@ -91,7 +91,7 @@
                         $numTables = @mysql_num_rows($queryReply);
                         $displayBuf = "";
 						$curLex = "";
-						
+
 						// Display list of lexicons with links to their individual administration pages
 						if(!$numTables) {
 							echo("<p>No lexicons found.</p>\n");
@@ -100,7 +100,7 @@
 	                            $langID = mysql_result($queryReply, $i, 'Index_ID');
 								$langName = mysql_result($queryReply, $i, 'Name');
 	                            $displayBuf .= "<p><a href=\"adm_viewlex.php?i=" . $langID . "\" class=\"lexlink\">" . $langName . "</a></p>\n";
-								
+
 								if($langID == $lexIndex) {
 									$curLex = $langName;
 								}
@@ -120,7 +120,7 @@
 							$cleanFieldLabelArray[$key] = str_replace(' ', '', $field);
 						}
 						$searchableFieldArray = explode("\n", mysql_result($queryReply, 0, 'SearchableFields'));
-						
+
 						// If data was submitted via POST, update the database
 						if(isset($_POST['submit'])) {
 							// Iterate over submitted fields by referencing the field label array, and create a SQL update command for each field
@@ -150,18 +150,18 @@
 										$fontColor = mysql_real_escape_string($_POST[$cleanFieldLabel . "-color"]);
 										$label = (isset($_POST[$cleanFieldLabel . "-label"])) ? 1 : 0;
 										$bulletType = mysql_real_escape_string($_POST[$cleanFieldLabel . "-bullets"]);
-										
+
 										mysql_query("UPDATE `" . $curLex . "-styles` SET `FontFamily`='" . $fontFamily . "', `FontSize`='" . $fontSize . "', `FontColor`='" . $fontColor . "', `Label`='" . $label . "', `BulletType`='" . $bulletType . "' WHERE `Index_ID`='" . ($key + 1) . "';");
 										break;
 								}
 							}
-							
+
 							// Identify which fields were marked as searchable, and update the lexinfo table
 							$searchable = implode("\n", $_POST['searchable']);
 							mysql_query("UPDATE `lexinfo` SET `SearchableFields`='" . mysql_real_escape_string($searchable) . "' WHERE `Index_ID`=" . $lexIndex . ";");
-							
+
 							echo("<p>Display settings updated.</p>\n");
-							
+
 							// Close database connection and end script
 							@mysql_close($dbLink);
 							exit();
@@ -176,7 +176,7 @@
 								// Get the formatting settings for the current lexicon
 								$displayBuf = "";
 								$queryReply = mysql_query("SELECT * FROM `" . $curLex . "-styles`;");
-								
+
 								// Iterate over the table structure and generate a form containing the current row's contents pre-loaded
 								for($i = 0; $i < mysql_num_rows($queryReply); $i++) {
 									// For each field, get the data, a "cleaned" label safe for HTML IDs, and create a new HTML table row showing the field label
@@ -202,7 +202,7 @@
 											$underline = mysql_result($queryReply, $i, 'Underline');
 											$smallcaps = mysql_result($queryReply, $i, 'SmallCaps');
 											$label = mysql_result($queryReply, $i, 'Label');
-											
+
 											// ... and present a pre-loaded form to make changes
 											$displayBuf .= "<td><table class=\"lex_displayoptions\">";
 											$displayBuf .= "<tr><td>Font Family:</td><td><select name=\"" . $cleanFieldLabel . "-fontfamily\"><option value=\"serif\"" . (($fontFamily == "serif") ? " selected=\"selected\"" : "") . ">serif</option><option value=\"sans-serif\"" . (($fontFamily == "sans-serif") ? " selected=\"selected\"" : "") . ">sans-serif</option><option value=\"monospace\"" . (($fontFamily == "monospace") ? " selected=\"selected\"" : "") . ">monospace</option><option value=\"'Palatino Linotype', 'Book Antiqua', Palatino, serif\"" . (($fontFamily == "'Palatino Linotype', 'Book Antiqua', Palatino, serif") ? " selected=\"selected\"" : "") . ">formal</option></select></td></tr>";
@@ -222,7 +222,7 @@
 											$fontColor = mysql_result($queryReply, $i, 'FontColor');
 											$bulletType = mysql_result($queryReply, $i, 'BulletType');
 											$label = mysql_result($queryReply, $i, 'Label');
-											
+
 											// ... and present a pre-loaded form to make changes
 											$displayBuf .= "<td><table class=\"lex_displayoptions\">";
 											$displayBuf .= "<tr><td>Font Family:</td><td><select name=\"" . $cleanFieldLabel . "-fontfamily\"><option value=\"serif\"" . (($fontFamily == "serif") ? " selected=\"selected\"" : "") . ">serif</option><option value=\"sans-serif\"" . (($fontFamily == "sans-serif") ? " selected=\"selected\"" : "") . ">sans-serif</option><option value=\"monospace\"" . (($fontFamily == "monospace") ? " selected=\"selected\"" : "") . ">monospace</option><option value=\"'Palatino Linotype', 'Book Antiqua', Palatino, serif\"" . (($fontFamily == "'Palatino Linotype', 'Book Antiqua', Palatino, serif") ? " selected=\"selected\"" : "") . ">formal</option></select></td></tr>";

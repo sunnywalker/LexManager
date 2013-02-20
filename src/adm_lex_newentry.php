@@ -16,20 +16,20 @@
 
 	//////
 	// adm_lex_newentry.php
-	// 
+	//
 	// Purpose: Present a form to allow the administrator to add a new entry to the current lexicon
-	// Inputs: 
+	// Inputs:
 	//     'i' (GET, mandatory): the index of the lexicon in the "lexinfo" table
 	//     multiple (POST, optional): the new data submitted to add to the lexicon
 	//
 	//////
-	
+
 	// Check if user is logged in
 	session_start();
 	if($_SESSION['LM_login'] !== "1") {
 		header("Location: adm_login.php");
 	}
-	
+
 	// Import configuration
 	if(!file_exists('cfg/lex_config.php')) {
 		die("<p class=\"statictext warning\">You are missing a configuration file. You must have a valid configuration file to use LexManager. Go to the <a href=\"adm_setup.php\">Configuration Setup</a> page to create one.</p>");
@@ -41,10 +41,10 @@
 	$dbLink = mysql_connect($LEX_serverName, $LEX_adminUser, $LEX_adminPassword);
     @mysql_select_db($LEX_databaseName) or die("      <p class=\"statictext warning\">Unable to connect to database.</p>\n");
     $charset = mysql_query("SET NAMES utf8");
-    
+
 	// Ensure mandatory GET inputs are set, else end execution
 	if(isset($_GET['i'])) {
-		$lexIndex = $_GET['i'];		   
+		$lexIndex = $_GET['i'];
 	} elseif(!isset($_POST['submit'])) {
 		die('<p class=\"statictext warning\">Error: No index provided.</p>');
 	}
@@ -54,12 +54,12 @@
 	<head>
     	<title>LexManager Administration</title>
         <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-		<link rel="stylesheet" type="text/css" href="res/lex_core.css">
-        <link rel="shortcut icon" type="image/vnd.microsoft.icon" href="res/favicon.ico">
-        <link rel="apple-touch-icon" href="res/apple-touch-icon.png">
+		<link rel="stylesheet" type="text/css" href="css/lex_core.css">
+        <link rel="shortcut icon" type="image/vnd.microsoft.icon" href="images/favicon.ico">
+        <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
 		<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
-        <script type="text/javascript" src="res/lex.js"></script>
-        <script type="text/javascript" src="res/admin.js"></script>
+        <script type="text/javascript" src="js/lex.js"></script>
+        <script type="text/javascript" src="js/amin.js"></script>
     </head>
     <body>
     	<div id="content">
@@ -91,7 +91,7 @@
                         $numTables = @mysql_num_rows($queryReply);
                         $displayBuf = "";
 						$curLex = "";
-						
+
 						// Display list of lexicons with links to their individual administration pages
 						if(!$numTables) {
 							echo("<p>No lexicons found.</p>\n");
@@ -100,7 +100,7 @@
 	                            $langID = mysql_result($queryReply, $i, 'Index_ID');
 								$langName = mysql_result($queryReply, $i, 'Name');
 	                            $displayBuf .= "<p><a href=\"adm_viewlex.php?i=" . $langID . "\" class=\"lexlink\">" . $langName . "</a></p>\n";
-								
+
 								if($langID == $lexIndex) {
 									$curLex = $langName;
 								}
@@ -115,7 +115,7 @@
                     	$queryReply = mysql_query("SELECT `FieldLabels`, `FieldTypes` FROM `lexinfo` WHERE `Index_ID`=" . $lexIndex . ";");
                     	$fieldLabelArray = explode("\n", mysql_result($queryReply, 0, 'FieldLabels'));
                     	$fieldTypeArray = explode("\n", mysql_result($queryReply, 0, 'FieldTypes'));
-						
+
 						// If data was submitted via POST, update the database
 						if(isset($_POST['submit'])) {
 							$querystring = "INSERT INTO `" . $curLex . "` VALUES (";
@@ -136,7 +136,7 @@
 							}
 							$querystring .= ");";
 							$queryReply = mysql_query($querystring);
-							
+
 							// If update was successful, update the timestamp of the most recent edit in "lexinfo", else output an error message
 							if($queryReply) {
 								echo("<p>New entry successfully added to lexicon.</p>\n");

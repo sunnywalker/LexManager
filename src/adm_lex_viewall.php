@@ -16,15 +16,15 @@
 
 	//////
 	// adm_lex_viewall.php
-	// 
+	//
 	// Purpose: Display a table showing the contents of the lexicon
-	// Inputs: 
+	// Inputs:
 	//     'i' (GET, mandatory): the index of the lexicon in the "lexinfo" table
 	//     'start' (GET, optional): the starting offset for the first record shown; assumed to be 0 (start from the first record) if not given
 	//     'num' (GET, optional): the number of records to show at once; assumed to be 50 if not given
 	//
 	//////
-	
+
 	// Check if user is logged in
 	session_start();
 	if($_SESSION['LM_login'] !== "1") {
@@ -45,11 +45,11 @@
 
 	// Ensure mandatory GET inputs are set, else end execution
 	if(isset($_GET['i'])) {
-		$lexIndex = $_GET['i'];		   
+		$lexIndex = $_GET['i'];
 	} else {
 		die('<p class=\"statictext warning\">Error: No index provided.</p>');
 	}
-	
+
 	// Check if optional GET inputs are set, else give them default values
 	if(isset($_GET['start']) && isset($_GET['num'])) {
 		$startFrom = mysql_real_escape_string($_GET['start']);
@@ -64,12 +64,12 @@
 	<head>
     	<title>LexManager Administration</title>
         <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-		<link rel="stylesheet" type="text/css" href="res/lex_core.css">
-        <link rel="shortcut icon" type="image/vnd.microsoft.icon" href="res/favicon.ico">
-        <link rel="apple-touch-icon" href="res/apple-touch-icon.png">
+		<link rel="stylesheet" type="text/css" href="css/lex_core.css">
+        <link rel="shortcut icon" type="image/vnd.microsoft.icon" href="images/favicon.ico">
+        <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
 		<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
-        <script type="text/javascript" src="res/lex.js"></script>
-        <script type="text/javascript" src="res/admin.js"></script>
+        <script type="text/javascript" src="js/lex.js"></script>
+        <script type="text/javascript" src="js/amin.js"></script>
     </head>
     <body>
     	<div id="content">
@@ -101,7 +101,7 @@
                         $numTables = @mysql_num_rows($queryReply);
                         $displayBuf = "";
 						$curLex = "";
-						
+
 						// Display list of lexicons with links to their individual administration pages
 						if(!$numTables) {
 							echo("<p>No lexicons found.</p>\n");
@@ -110,7 +110,7 @@
 	                            $langID = mysql_result($queryReply, $i, 'Index_ID');
 								$langName = mysql_result($queryReply, $i, 'Name');
 	                            $displayBuf .= "<p><a href=\"adm_viewlex.php?i=" . $langID . "\" class=\"lexlink\">" . $langName . "</a></p>\n";
-								
+
 								if($langID == $lexIndex) {
 									$curLex = $langName;
 								}
@@ -145,10 +145,10 @@
 							$queryreply = mysql_query("SELECT * FROM `" . $curLex . "` LIMIT " . ($startFrom - 1) . ", " . $maxEntriesDisplayed . ";");
 							$numrows = mysql_num_rows($queryreply);
 							$displayBuf = "";
-							
+
 							// Set encoding for multibyte PHP string functions
 							mb_internal_encoding("UTF-8");
-							
+
 							// Iterate over the returned entries and print out a table row for each
 							for($i = 0; $i < $numrows; $i++) {
 								// Create 'View' and 'Edit' links as the first cell of each row

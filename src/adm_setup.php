@@ -16,9 +16,9 @@
 
 	//////
 	// adm_setup.php
-	// 
+	//
 	// Purpose: A one-time initial configuration to set up LexManager in a new environment
-	// Inputs: 
+	// Inputs:
 	//     multiple (POST, optional): the submitted data for creating a new configuration file
 	//
 	//////
@@ -33,11 +33,11 @@
 	<head>
     	<title>LexManager Administration</title>
         <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-		<link rel="stylesheet" type="text/css" href="res/lex_core.css">
-        <link rel="shortcut icon" type="image/vnd.microsoft.icon" href="res/favicon.ico">
-        <link rel="apple-touch-icon" href="res/apple-touch-icon.png">
+		<link rel="stylesheet" type="text/css" href="css/lex_core.css">
+        <link rel="shortcut icon" type="image/vnd.microsoft.icon" href="images/favicon.ico">
+        <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
 		<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
-        <script type="text/javascript" src="res/lex.js"></script>
+        <script type="text/javascript" src="js/lex.js"></script>
     </head>
     <body>
     	<div id="content">
@@ -61,38 +61,38 @@
 							$public_pass = ($_POST['public_pass'] == $_POST['public_pass2']) ? $_POST['public_pass'] : '';
 							$lm_username = $_POST['lm_username'];
 							$lm_password = ($_POST['lm_password'] == $_POST['lm_password2']) ? $_POST['lm_password'] : '';
-							
+
 							if (!$admin_pass || !$public_pass || !$lm_password) {
 								// Check to make sure passwords match
 								echo('<p class="statictext warning">One set of passwords do not match. Go back and recheck.</p>');
 							} else {
 								// Create a string containing the contents of the new configuration file
 								$configContents = "<?php\n\n\$LEX_adminUser = \"" . $admin_user . "\";\n\$LEX_adminPassword = \"" . $admin_pass . "\";\n\$LEX_publicUser = \"" . $public_user . "\";\n\$LEX_publicPassword = \"" . $public_pass . "\";\n\n\$LEX_serverName = \"" . $servername . "\";\n\$LEX_databaseName = \"" . $lexDatabase . "\";\n\n?>\n";
-								
+
 								// Open an actual file for writing, or an error if a stream could not be created
 								$configFileHandle = @fopen('cfg/lex_config.php', 'w') or die('<p>Can\'t open file for writing. Check permissions.</p>');
 								fwrite($configFileHandle, $configContents);
 								fclose($configFileHandle);
-								
+
 								// Open a MySQL connection
 								$dbLink = mysql_connect($servername, $admin_user, $admin_pass);
-								
+
 								// Create the LexManager database
 								mysql_query("CREATE database `" . $lexDatabase . "`;");
 								echo('<p>The configuration file has been created. You are now ready to create a new lexicon.</p><p><a href="manager.php">Return to LexManager Administration</a></p>');
-								
+
 								// Create a user table and add the administrator account and encrypted password
 								// The password is simply encrypted using MD5; this is not especially secure, but is more than suitable for the purposes of LexManager
 								@mysql_select_db($lexDatabase);
 								$charset = mysql_query("SET NAMES utf8");
 								mysql_query("CREATE TABLE `lex_userinfo` (`Index_ID` int(1) NOT NULL AUTO_INCREMENT, `Name` varchar(255) NOT NULL, `Password` varchar(255) NOT NULL, PRIMARY KEY (`Index_ID`)) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;");
 								mysql_query("INSERT INTO `lex_userinfo` (`Name`, `Password`) VALUES ('" . $lm_username . "', '" . md5($lm_password) . "');");
-								
+
 								// Start a new session so the user isn't immediately forced to login
 								session_start();
 								$_SESSION['LM_login'] = "1";
 							}
-							
+
 						} else {
 							// If no data was submitted, output the appropriate setup form
                 			echo('
@@ -101,7 +101,7 @@
 								<form id="config_form" action="adm_setup.php" method="post">
 									<fieldset>
 										<legend>Database Information</legend>
-										<p>This information concerns the MySQL instance that LexManager will use to store information. 
+										<p>This information concerns the MySQL instance that LexManager will use to store information.
 										<p>In the following field, enter the name of the server hosting MySQL. If you do not know, contact your hosting provider. If you are running LexManager on your own machine, try using \'localhost\'.</p>
 										<table>
 											<tr>

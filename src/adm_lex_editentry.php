@@ -16,33 +16,33 @@
 
 	//////
 	// adm_lex_editentry.php
-	// 
+	//
 	// Purpose: Open an entry in a lexicon, load all of its data, and allow the administrator to edit the data
-	// Inputs: 
+	// Inputs:
 	//     'i' (GET, mandatory): the index of the lexicon in the "lexinfo" table
 	//     'e' (GET, mandatory): the index of the entry within the lexicon's table
 	//     multiple (POST, optional): the new data submitted to replace the current row
 	//
 	//////
-	
+
 	// Check if user is logged in
 	session_start();
 	if($_SESSION['LM_login'] !== "1") {
 		header("Location: adm_login.php");
 	}
-	
+
 	// Import configuration
 	if(!file_exists('cfg/lex_config.php')) {
 		die("<p class=\"statictext warning\">You are missing a configuration file. You must have a valid configuration file to use LexManager. Go to the <a href=\"adm_setup.php\">Configuration Setup</a> page to create one.</p>");
 	} else {
 		include('cfg/lex_config.php');
 	}
-	
+
 	// Connect to MySQL database
 	$dbLink = mysql_connect($LEX_serverName, $LEX_adminUser, $LEX_adminPassword);
     @mysql_select_db($LEX_databaseName) or die("      <p class=\"statictext warning\">Unable to connect to database.</p>\n");
     $charset = mysql_query("SET NAMES utf8");
-    
+
 	// Ensure mandatory GET inputs are set, else end execution
 	if(isset($_GET['i']) && isset($_GET['e'])) {
 		$lexIndex = $_GET['i'];
@@ -56,12 +56,12 @@
 	<head>
     	<title>LexManager Administration</title>
         <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-		<link rel="stylesheet" type="text/css" href="res/lex_core.css">
-        <link rel="shortcut icon" type="image/vnd.microsoft.icon" href="res/favicon.ico">
-        <link rel="apple-touch-icon" href="res/apple-touch-icon.png">
+		<link rel="stylesheet" type="text/css" href="css/lex_core.css">
+        <link rel="shortcut icon" type="image/vnd.microsoft.icon" href="images/favicon.ico">
+        <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
 		<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
-        <script type="text/javascript" src="res/lex.js"></script>
-        <script type="text/javascript" src="res/admin.js"></script>
+        <script type="text/javascript" src="js/lex.js"></script>
+        <script type="text/javascript" src="js/amin.js"></script>
     </head>
     <body>
     	<div id="content">
@@ -93,7 +93,7 @@
                         $numTables = @mysql_num_rows($queryReply);
                         $displayBuf = "";
 						$curLex = "";
-						
+
 						// Display list of lexicons with links to their individual administration pages
 						if(!$numTables) {
 							echo("<p>No lexicons found.</p>\n");
@@ -102,7 +102,7 @@
 	                            $langID = mysql_result($queryReply, $i, 'Index_ID');
 								$langName = mysql_result($queryReply, $i, 'Name');
 	                            $displayBuf .= "<p><a href=\"adm_viewlex.php?i=" . $langID . "\" class=\"lexlink\">" . $langName . "</a></p>\n";
-								
+
 								if($langID == $lexIndex) {
 									$curLex = $langName;
 								}
@@ -117,7 +117,7 @@
                     	$queryReply = mysql_query("SELECT `FieldLabels`, `FieldTypes` FROM `lexinfo` WHERE `Index_ID`=" . $lexIndex . ";");
                     	$fieldLabelArray = explode("\n", mysql_result($queryReply, 0, 'FieldLabels'));
                     	$fieldTypeArray = explode("\n", mysql_result($queryReply, 0, 'FieldTypes'));
-						
+
 						// If data was submitted via POST, update the database
 						if(isset($_POST['submit'])) {
 							// Iterate over submitted fields by referencing the field label array, and create a SQL update command
@@ -131,7 +131,7 @@
 							}
 							$querystring = substr($querystring, 0, -2) . " WHERE `Index_ID`=" . $entryIndex . ";";
 							$queryReply = mysql_query($querystring);
-							
+
 							// If update was successful, update the timestamp of the most recent edit in "lexinfo", else output an error message
 							if($queryReply) {
 								echo("<p>Entry #" . $entryIndex . " successfully updated.</p>\n");
@@ -147,7 +147,7 @@
 								// Get the current row's contents
 								$queryreply = mysql_query("SELECT * FROM `" . $curLex . "` WHERE `Index_ID`=" . $entryIndex . ";");
                                 $displayBuf = "";
-								
+
 								// Iterate over the table structure and generate a form containing the current row's contents pre-loaded
                                 foreach($fieldLabelArray as $key => $fieldLabel) {
 									// For each field, get the data, a "cleaned" label safe for HTML IDs, and create a new HTML table row showing the field label

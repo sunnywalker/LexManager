@@ -16,7 +16,7 @@
 
 	//////
 	// adm_login.php
-	// 
+	//
 	// Purpose: Present a login form to protect the administration pages from general access
 	// Inputs:
 	//     'username' (POST, optional): the username to be validated
@@ -30,7 +30,7 @@
 	} else {
 		include('cfg/lex_config.php');
 	}
-	
+
 	// Connect to MySQL database
     $dbLink = mysql_connect($LEX_serverName, $LEX_adminUser, $LEX_adminPassword);
     @mysql_select_db($LEX_databaseName) or die("      <p class=\"statictext warning\">Unable to connect to database.</p>\n");
@@ -41,7 +41,7 @@
 		$user = mysql_real_escape_string($_POST['username']);
 		$pass = md5($_POST['password']);
 		$queryReply = mysql_query("SELECT `password` FROM `lex_userinfo` WHERE `Name`='" . $user . "';");
-		
+
 		// If signin invalid, set a flag; if valid, create a new session and set a cookie
 		if(mysql_num_rows($queryReply) == 0 || mysql_result($queryReply, 0, 'Password') !== $pass) {
 			$loginFailed = TRUE;
@@ -57,13 +57,13 @@
 	<head>
     	<title>LexManager Administration</title>
         <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-		<link rel="stylesheet" type="text/css" href="res/lex_core.css">
-        <link rel="shortcut icon" type="image/vnd.microsoft.icon" href="res/favicon.ico">
-        <link rel="apple-touch-icon" href="res/apple-touch-icon.png">
+		<link rel="stylesheet" type="text/css" href="css/lex_core.css">
+        <link rel="shortcut icon" type="image/vnd.microsoft.icon" href="images/favicon.ico">
+        <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
 		<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
         <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
-        <script type="text/javascript" src="res/lex.js"></script>
-        <script type="text/javascript" src="res/admin.js"></script>
+        <script type="text/javascript" src="js/lex.js"></script>
+        <script type="text/javascript" src="js/amin.js"></script>
     </head>
     <body>
     	<div id="content">
