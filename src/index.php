@@ -25,7 +25,7 @@
 
 	// Import configuration
 	if(!file_exists('cfg/lex_config.php')) {
-		die("<p class=\"statictext warning\">Error: Missing configuration file</p>");
+		die("<p class=\"statictext warning\">Error: Missing configuration file. Visit <a href=\"adm_setup.php\">the setup page</a> to get started.</p>");
 	} else {
 		include('cfg/lex_config.php');
 	}
