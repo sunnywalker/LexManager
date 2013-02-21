@@ -25,7 +25,7 @@
 
 	// If a configuration file already exists, do not continue
 	if (file_exists('cfg/lex_config.php')) {
-		die('<p>You already have a configuration file! If you want to change anything, go back and visit the Settings page.</p>');
+		die('<p>You already have a configuration file! If you want to change anything, go back and visit the <a href="adm_settings.php">Settings</a> page.</p>');
 	}
 ?>
 <!DOCTYPE HTML>
@@ -100,7 +100,7 @@
 							echo '<p class="statictext warning">Your server does not appear to support MySQL via PDO. You will not be able to use this product without the MySQL PDO driver.</p>';
 						} else {
 							// If no data was submitted, output the appropriate setup form
-							echo('
+							echo '
 								<p class="statictext">Welcome to LexManager!</p>
 								<p class="statictext">Just fill out the following information and a LexManager configuration file will be created for you. Then you\'ll be able to get started using LexManager right away!</p>
 								<form id="config_form" action="adm_setup.php" method="post">
@@ -167,7 +167,7 @@
 									<p>Clicking \'Create\' will generate a configuration file and build the necessary databases.</p>
 									<input type="submit" name="submit" value="Create">
 								</form>
-							');
+							';
 						}
 					?>
 

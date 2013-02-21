@@ -22,21 +22,7 @@
 	//
 	//////
 
-	// Check if user is logged in
-	session_start();
-	if ($_SESSION['LM_login'] !== "1") {
-		header("Location: adm_login.php");
-	}
-
-	// Import configuration; if it doesn't exist, redirect to the configuration setup page
-	if (!file_exists('cfg/lex_config.php')) {
-		die("<p class=\"statictext warning\">You are missing a configuration file. You must have a valid configuration file to use LexManager. Go to the <a href=\"adm_setup.php\">Configuration Setup</a> page to create one.</p>");
-	} else {
-		include 'cfg/lex_config.php';
-	}
-
-	// Connect to MySQL database
-	$dbLink = new PDO("mysql:host=$LEX_serverName;dbname=$LEX_databaseName", $LEX_adminUser, $LEX_adminPassword, array(PDO::MYSQL_ATTR_INIT_COMMAND=>'SET NAMES "UTF8"')) or die("<p class=\"statictext warning\">Unable to connect to database.</p>\n");
+	require_once '_lex_admin.php'; //check for login, check for and load config file and connect to the database
 ?>
 <!DOCTYPE HTML>
 <html>
@@ -81,14 +67,14 @@
 				</div>
 				<div id="entryview">
 					<p class="statictext">Welcome to the LexManager Administration page.</p>
-					<p class="statictext">From here you can control all of the lexicons within LexManager. Select an option from the top right corner to create, import, and export lexicons, or select a specific lexicon in the list to the left to see the options available for that particular language.</p>
+					<p class="statictext">From here you can control all of the lexicons within LexManager. Select an option from the top right corner to <a href="adm_newlexicon.php">create</a>, import, and <a href="adm_export.php">export</a> lexicons, or select a specific lexicon in the list to the left to see the options available for that particular language.</p>
 					<p class="statictext">From a particular lexicon's page you can add, edit, and remove entries or modify the structure and appearance of the lexicon as a whole.</p>
 					<?php
 						// If no lexicons have yet been created, display a prompt guiding the administrator to the New Lexicon page
-						if(!$numTables) {
+						if (!$numTables) {
 							$displayBuf = "<p class=\"warning\">It appears you have no lexicons set up. If you would like to set up a new lexicon, please select \"New Lexicon\" above. If you believe this message is in error, check your MySQL and LexManager configurations.</p>";
 
-							echo($displayBuf);
+							echo $displayBuf;
 						}
 					?>
 

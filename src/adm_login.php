@@ -24,90 +24,76 @@
 	//
 	//////
 
-	// Import configuration
-	if(!file_exists('cfg/lex_config.php')) {
-		die("<p class=\"statictext warning\">You are missing a configuration file. You must have a valid configuration file to use LexManager. Go to the <a href=\"adm_setup.php\">Configuration Setup</a> page to create one.</p>");
-	} else {
-		include('cfg/lex_config.php');
-	}
-
-	// Connect to MySQL database
-    $dbLink = mysql_connect($LEX_serverName, $LEX_adminUser, $LEX_adminPassword);
-    @mysql_select_db($LEX_databaseName) or die("      <p class=\"statictext warning\">Unable to connect to database.</p>\n");
-    $charset = mysql_query("SET NAMES utf8");
+	require_once '_lex_admin.php'; //check for login, check for and load config file and connect to the database
 
 	// If data was submitted via POST, validate it
-	if(isset($_POST['submit'])) {
+	if (isset($_POST['submit'])) {
 		$user = mysql_real_escape_string($_POST['username']);
-		$pass = md5($_POST['password']);
-		$queryReply = mysql_query("SELECT `password` FROM `lex_userinfo` WHERE `Name`='" . $user . "';");
-
-		// If signin invalid, set a flag; if valid, create a new session and set a cookie
-		if(mysql_num_rows($queryReply) == 0 || mysql_result($queryReply, 0, 'Password') !== $pass) {
-			$loginFailed = TRUE;
-		} else {
+		$pass = sha1($_POST['password']);
+		$queryReply = $dbLink->prepare("SELECT `password` FROM `lex_userinfo` WHERE `Name`=:user AND `password`=:password;");
+		$queryReply->execute(array(':user'=>$_POST['username'], ':password'=>sha1($_POST['password'])));
+		if ($row = $queryReply->fetch()) {
+			// If signin invalid, set a flag; if valid, create a new session and set a cookie
 			session_start();
 			$_SESSION['LM_login'] = "1";
 			header('Location: manager.php');
+			exit;
+		} else {
+			$loginFailed = true;
 		}
 	}
 ?>
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html>
 	<head>
-    	<title>LexManager Administration</title>
-        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<title>LexManager Administration</title>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<link rel="stylesheet" type="text/css" href="css/lex_core.css">
-        <link rel="shortcut icon" type="image/vnd.microsoft.icon" href="images/favicon.ico">
-        <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+		<link rel="shortcut icon" type="image/vnd.microsoft.icon" href="images/favicon.ico">
+		<link rel="apple-touch-icon" href="images/apple-touch-icon.png">
 		<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
-        <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
-        <script type="text/javascript" src="js/lex.js"></script>
-        <script type="text/javascript" src="js/amin.js"></script>
-    </head>
-    <body>
-    	<div id="content">
-        	<div id="topbar">
-            	<a href="manager.php" class="title">Administration</a><br/>
-            </div>
-            <div id="main">
-	        	<div id="leftbar">
-	            </div>
-	            <div id="entryview">
-                	<?php
+		<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
+		<script type="text/javascript" src="js/lex.js"></script>
+		<script type="text/javascript" src="js/admin.js"></script>
+	</head>
+	<body>
+		<div id="content">
+			<div id="topbar">
+				<a href="manager.php" class="title">Administration</a><br/>
+			</div>
+			<div id="main">
+				<div id="leftbar">
+				</div>
+				<div id="entryview">
+					<?php
 						// Show error message if login failed
-						if(@$loginFailed) {
-							echo("<p class=\"statictext warning\">Error: Incorrect username or password.</p>\n");
+						if (@$loginFailed) {
+							echo "<p class=\"statictext warning\">Error: Incorrect username or password.</p>\n";
 						}
 					?>
-                	<p>To continue, you need to sign in.</p>
-                    <form id="login" action="adm_login.php" method="post">
-                    	<fieldset>
-                        	<legend>Sign In</legend>
-                            <table>
-                            	<tr>
-                                	<td><label for="username">Username:</label></td>
-                                    <td><input type="text" name="username" size="50"></td>
-                                </tr>
-                                <tr>
-                                	<td><label for="password">Password:</label></td>
-                                    <td><input type="password" name="password" size="50"></td>
-                                </tr>
-                            </table>
-                            <input type="submit" name="submit" value="Sign In">
-                        </fieldset>
-                    </form>
-                    <noscript>
-                    	<p class="statictext warning">This page requires that JavaScript be enabled.</p>
-                    </noscript>
-                    <br/><br/>
-	            </div>
-            </div>
-        </div>
-    </body>
+					<p>To continue, you need to sign in.</p>
+					<form id="login" action="adm_login.php" method="post">
+						<fieldset>
+							<legend>Sign In</legend>
+							<table>
+								<tr>
+									<td><label for="username">Username:</label></td>
+									<td><input type="text" name="username" size="50"></td>
+								</tr>
+								<tr>
+									<td><label for="password">Password:</label></td>
+									<td><input type="password" name="password" size="50"></td>
+								</tr>
+							</table>
+							<input type="submit" name="submit" value="Sign In">
+						</fieldset>
+					</form>
+					<noscript>
+						<p class="statictext warning">This page requires that JavaScript be enabled.</p>
+					</noscript>
+					<br/><br/>
+				</div>
+			</div>
+		</div>
+	</body>
 </html>
-
-<?php
-	// Close database connection
-	@mysql_close($dbLink);
-?>

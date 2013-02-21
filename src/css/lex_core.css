@@ -167,7 +167,7 @@ a.alpha, a.lexlink {
 	font-size: large;
 }
 
-a.lexlink {
+a.lexlink, a.entrylink {
 	display: block;
 }
 

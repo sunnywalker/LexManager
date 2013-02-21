@@ -16,18 +16,17 @@
 
 	//////
 	// adm_logout.php
-	// 
+	//
 	// Purpose: Destroys the current session
 	// Inputs: none
 	//
 	//////
-	
+
 	// Load current session
 	session_start();
-	
-	// Destroy current session
-	session_destroy();
-	
+
+	// Destroy any session variables used
+	unset($_SESSION['LM_login']);
+
 	// Redirect to login page
 	header("Location: adm_login.php");
-?>
