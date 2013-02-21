@@ -1,0 +1,18 @@
+src/cfg/lex_config.php
+
+# OS files
+.DS_Store
+.AppleDouble
+.LSOverride
+.Spotlight-V100
+Icon
+Desktop.ini
+
+# Thumbnails
+._*
+Thumbs.db
+ehthumbs.db
+
+# Trashes
+$RECYBLE.BIN/
+.Trashes
