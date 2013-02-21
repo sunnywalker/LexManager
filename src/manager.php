@@ -24,70 +24,66 @@
 
 	// Check if user is logged in
 	session_start();
-	if($_SESSION['LM_login'] !== "1") {
+	if ($_SESSION['LM_login'] !== "1") {
 		header("Location: adm_login.php");
 	}
 
 	// Import configuration; if it doesn't exist, redirect to the configuration setup page
-	if(!file_exists('cfg/lex_config.php')) {
+	if (!file_exists('cfg/lex_config.php')) {
 		die("<p class=\"statictext warning\">You are missing a configuration file. You must have a valid configuration file to use LexManager. Go to the <a href=\"adm_setup.php\">Configuration Setup</a> page to create one.</p>");
 	} else {
-		include('cfg/lex_config.php');
+		include 'cfg/lex_config.php';
 	}
 
 	// Connect to MySQL database
-	$dbLink = mysql_connect($LEX_serverName, $LEX_adminUser, $LEX_adminPassword);
-    @mysql_select_db($LEX_databaseName) or die("      <p class=\"statictext warning\">Unable to connect to database.</p>\n");
-    $charset = mysql_query("SET NAMES utf8");
+	$dbLink = new PDO("mysql:host=$LEX_serverName;dbname=$LEX_databaseName", $LEX_adminUser, $LEX_adminPassword, array(PDO::MYSQL_ATTR_INIT_COMMAND=>'SET NAMES "UTF8"')) or die("<p class=\"statictext warning\">Unable to connect to database.</p>\n");
 ?>
 <!DOCTYPE HTML>
 <html>
 	<head>
-    	<title>LexManager Administration</title>
-        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<title>LexManager Administration</title>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<link rel="stylesheet" type="text/css" href="css/lex_core.css">
-        <link rel="shortcut icon" type="image/vnd.microsoft.icon" href="images/favicon.ico">
-        <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+		<link rel="shortcut icon" type="image/vnd.microsoft.icon" href="images/favicon.ico">
+		<link rel="apple-touch-icon" href="images/apple-touch-icon.png">
 		<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
-        <script type="text/javascript" src="js/lex.js"></script>
-    </head>
-    <body>
-    	<div id="content">
-        	<div id="topbar">
-            	<a href="manager.php" class="title">Administration</a><br/>
-                <div id="adminnav">
-                	<p>• <a href="adm_newlexicon.php">New Lexicon</a></p>
-                    <p>• <a href="adm_backup.php">Backup Lexicons</a></p>
-                    <p>• <a href="adm_settings.php">Settings</a></p>
-                    <p>• <a href="adm_logout.php">Logout</a></p>
-                </div>
-            </div>
-            <div id="main">
-	        	<div id="leftbar">
+		<script type="text/javascript" src="js/lex.js"></script>
+	</head>
+	<body>
+		<div id="content">
+			<div id="topbar">
+				<a href="manager.php" class="title">Administration</a><br/>
+				<div id="adminnav">
+					<p>• <a href="adm_newlexicon.php">New Lexicon</a></p>
+					<p>• <a href="adm_backup.php">Backup Lexicons</a></p>
+					<p>• <a href="adm_settings.php">Settings</a></p>
+					<p>• <a href="adm_logout.php">Logout</a></p>
+				</div>
+			</div>
+			<div id="main">
+				<div id="leftbar">
 					<?php
 						// Retrieve list of available lexicons
-                        $queryReply = mysql_query("SELECT `Index_ID`, `Name` FROM `lexinfo` ORDER BY `Name`;");
-                        $numTables = @mysql_num_rows($queryReply);
-                        $displayBuf = "";
+						$queryReply = $dbLink->query("SELECT `Index_ID`, `Name` FROM `lexinfo` ORDER BY `Name`;");
+						$numTables = $dbLink->query("SELECT FOUND_ROWS()")->fetchColumn();
+						$displayBuf = "";
 
 						// Display list of lexicons with links to their individual administration pages
-						if(!$numTables) {
-							echo("<p>No lexicons found.</p>\n");
+						if (!$numTables) {
+							echo "<p>No lexicons found.</p>\n";
 						} else {
-							for ($i = 0; $i < $numTables; $i++) {
-	                            $langID = mysql_result($queryReply, $i, 'Index_ID');
-								$langName = mysql_result($queryReply, $i, 'Name');
-	                            $displayBuf .= "<p><a href=\"adm_viewlex.php?i=" . $langID . "\" class=\"lexlink\">" . $langName . "</a></p>\n";
+							while ($lang = $queryReply->fetch(PDO::FETCH_OBJ)) {
+								$displayBuf .= "<p><a href=\"adm_viewlex.php?i=" . $lang->Index_ID . "\" class=\"lexlink\">" . htmlspecialchars($lang->Name) . "</a></p>\n";
 							}
-							echo($displayBuf);
+							echo $displayBuf;
 						}
-                    ?>
-	            </div>
-	            <div id="entryview">
-	            	<p class="statictext">Welcome to the LexManager Administration page.</p>
-                    <p class="statictext">From here you can control all of the lexicons within LexManager. Select an option from the top right corner to create, import, and export lexicons, or select a specific lexicon in the list to the left to see the options available for that particular language.</p>
-                    <p class="statictext">From a particular lexicon's page you can add, edit, and remove entries or modify the structure and appearance of the lexicon as a whole.</p>
-                    <?php
+					?>
+				</div>
+				<div id="entryview">
+					<p class="statictext">Welcome to the LexManager Administration page.</p>
+					<p class="statictext">From here you can control all of the lexicons within LexManager. Select an option from the top right corner to create, import, and export lexicons, or select a specific lexicon in the list to the left to see the options available for that particular language.</p>
+					<p class="statictext">From a particular lexicon's page you can add, edit, and remove entries or modify the structure and appearance of the lexicon as a whole.</p>
+					<?php
 						// If no lexicons have yet been created, display a prompt guiding the administrator to the New Lexicon page
 						if(!$numTables) {
 							$displayBuf = "<p class=\"warning\">It appears you have no lexicons set up. If you would like to set up a new lexicon, please select \"New Lexicon\" above. If you believe this message is in error, check your MySQL and LexManager configurations.</p>";
@@ -96,17 +92,12 @@
 						}
 					?>
 
-                    <noscript>
-                    	<p class="statictext warning">This page requires that JavaScript be enabled.</p>
-                    </noscript>
-                    <br/><br/>
-	            </div>
-            </div>
-        </div>
-    </body>
+					<noscript>
+						<p class="statictext warning">This page requires that JavaScript be enabled.</p>
+					</noscript>
+					<br/><br/>
+				</div>
+			</div>
+		</div>
+	</body>
 </html>
-
-<?php
-	// Close database connection
-	@mysql_close($dbLink);
-?>

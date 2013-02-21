@@ -31,61 +31,64 @@
 <!DOCTYPE HTML>
 <html>
 	<head>
-    	<title>LexManager Administration</title>
-        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<title>LexManager Administration</title>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<link rel="stylesheet" type="text/css" href="css/lex_core.css">
-        <link rel="shortcut icon" type="image/vnd.microsoft.icon" href="images/favicon.ico">
-        <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+		<link rel="shortcut icon" type="image/vnd.microsoft.icon" href="images/favicon.ico">
+		<link rel="apple-touch-icon" href="images/apple-touch-icon.png">
 		<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
-        <script type="text/javascript" src="js/lex.js"></script>
-    </head>
-    <body>
-    	<div id="content">
-        	<div id="topbar">
-            	<a href="manager.php" class="title">LexManager Setup</a><br/>
-            </div>
-            <div id="main">
-	        	<div id="leftbar">
+		<script type="text/javascript" src="js/lex.js"></script>
+	</head>
+	<body>
+		<div id="content">
+			<div id="topbar">
+				<a href="manager.php" class="title">LexManager Setup</a><br/>
+			</div>
+			<div id="main">
+				<div id="leftbar">
 
-	            </div>
-	            <div id="entryview">
-                	<?php
+				</div>
+				<div id="entryview">
+					<?php
 						// If data was submitted via POST, create a configuration file
-	           			if (isset($_POST['submit'])) {
+						if (isset($_POST['submit'])) {
 							// Retrieve variables
 							$servername = $_POST['servername'];
-							$lexDatabase = mysql_real_escape_string($_POST['lex_database']);
+							$lexDatabase = $_POST['lex_database'];
 							$admin_user = $_POST['admin_user'];
-							$admin_pass = ($_POST['admin_pass'] == $_POST['admin_pass2']) ? $_POST['admin_pass'] : '';
+							$admin_pass = $_POST['admin_pass'];
 							$public_user = $_POST['public_user'];
-							$public_pass = ($_POST['public_pass'] == $_POST['public_pass2']) ? $_POST['public_pass'] : '';
+							$public_pass = $_POST['public_pass'];
 							$lm_username = $_POST['lm_username'];
-							$lm_password = ($_POST['lm_password'] == $_POST['lm_password2']) ? $_POST['lm_password'] : '';
+							$lm_password = $_POST['lm_password'];
 
 							if (!$admin_pass || !$public_pass || !$lm_password) {
 								// Check to make sure passwords match
-								echo('<p class="statictext warning">One set of passwords do not match. Go back and recheck.</p>');
+								echo('<p class="statictext warning">Passwords cannot be blank. Go back and recheck.</p>');
 							} else {
 								// Create a string containing the contents of the new configuration file
 								$configContents = "<?php\n\n\$LEX_adminUser = \"" . $admin_user . "\";\n\$LEX_adminPassword = \"" . $admin_pass . "\";\n\$LEX_publicUser = \"" . $public_user . "\";\n\$LEX_publicPassword = \"" . $public_pass . "\";\n\n\$LEX_serverName = \"" . $servername . "\";\n\$LEX_databaseName = \"" . $lexDatabase . "\";\n";
 
 								// Open an actual file for writing, or an error if a stream could not be created
-								$configFileHandle = @fopen('cfg/lex_config.php', 'w') or die('<p>Can\'t open cfg/lex_config.php for writing. Check permissions.</p>');
+								$configFileHandle = @fopen('cfg/lex_config.php', 'w') or die('<p>Cannot open <code>cfg/lex_config.php</code> for writing. Please check the permissions or manually create the file with this content.<br><textarea cols="50" rows="12">'.htmlspecialchars($configContents).'</textarea></p>');
 								fwrite($configFileHandle, $configContents);
 								fclose($configFileHandle);
 
 								// Open a MySQL connection
-								$dbLink = new PDO("mysql:host=$servername;dbname=$lexDatabase", $admin_user, $admin_pass);
+								$dbLink = new PDO("mysql:host=$servername;dbname=$lexDatabase", $admin_user, $admin_pass, array(PDO::MYSQL_ATTR_INIT_COMMAND=>'SET NAMES "UTF8"')) or die("<p class=\"statictext warning\">Unable to connect to database.</p>\n");
 
 								// Create the LexManager database
 								// mysql_query("CREATE database `" . $lexDatabase . "`;");
+								// $dbLink->prepare("CREATE database :lexDatabase");
+								// $dbLink->execute(array(':lexDatabase'=>$lexDatabase));
 								echo('<p>The configuration file has been created. You are now ready to create a new lexicon.</p><p><a href="manager.php">Return to LexManager Administration</a></p>');
 
 								// Create a user table and add the administrator account and encrypted password
 								// The password is simply encrypted using MD5; this is not especially secure, but is more than suitable for the purposes of LexManager
 								$dbLink->query('SET NAMES utf8');
 								$dbLink->query("CREATE TABLE `lex_userinfo` (`Index_ID` int(1) NOT NULL AUTO_INCREMENT, `Name` varchar(255) NOT NULL, `Password` varchar(255) NOT NULL, PRIMARY KEY (`Index_ID`)) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;");
-								$dbLink->query("INSERT INTO `lex_userinfo` (`Name`, `Password`) VALUES ('" . $lm_username . "', '" . sha1($lm_password) . "');");
+								$insertSQL = $dbLink->prepare("INSERT INTO `lex_userinfo` (`Name`, `Password`) VALUES (:lm_username, :lm_password);");
+								$dbLink->execute(array(':lm_username'=>$lm_username, ':lm_password'=>sha1($lm_password)));
 
 								// Start a new session so the user isn't immediately forced to login
 								session_start();
@@ -97,7 +100,7 @@
 							echo '<p class="statictext warning">Your server does not appear to support MySQL via PDO. You will not be able to use this product without the MySQL PDO driver.</p>';
 						} else {
 							// If no data was submitted, output the appropriate setup form
-                			echo('
+							echo('
 								<p class="statictext">Welcome to LexManager!</p>
 								<p class="statictext">Just fill out the following information and a LexManager configuration file will be created for you. Then you\'ll be able to get started using LexManager right away!</p>
 								<form id="config_form" action="adm_setup.php" method="post">
@@ -129,11 +132,7 @@
 											</tr>
 											<tr>
 												<td><label for="admin_pass">Administrator Password:</label></td>
-												<td><input type="password" name="admin_pass" size="50"></td>
-											</tr>
-											<tr>
-												<td><label for="admin_pass2">Re-Enter Password:</label></td>
-												<td><input type="password" name="admin_pass2" size="50"></td>
+												<td><input type="text" name="admin_pass" size="50"></td>
 											</tr>
 										</table>
 									</fieldset>
@@ -147,11 +146,7 @@
 											</tr>
 											<tr>
 												<td><label for="admin_pass">Anonymous Password:</label></td>
-												<td><input type="password" name="public_pass" size="50"></td>
-											</tr>
-											<tr>
-												<td><label for="admin_pass2">Re-Enter Password:</label></td>
-												<td><input type="password" name="public_pass2" size="50"></td>
+												<td><input type="text" name="public_pass" size="50"></td>
 											</tr>
 										</table>
 									</fieldset>
@@ -165,11 +160,7 @@
 											</tr>
 											<tr>
 												<td><label for="lm_password">Password:</label></td>
-												<td><input type="password" name="lm_password" size="50"></td>
-											</tr>
-											<tr>
-												<td><label for="lm_password2">Re-Enter Password:</label></td>
-												<td><input type="password" name="lm_password2" size="50"></td>
+												<td><input type="text" name="lm_password" size="50"></td>
 											</tr>
 										</table>
 									</fieldset>
@@ -178,15 +169,15 @@
 								</form>
 							');
 						}
-                    ?>
+					?>
 
 
-                    <noscript>
-                    	<p class="statictext warning">This page requires that JavaScript be enabled.</p>
-                    </noscript>
-                    <br/><br/>
-	            </div>
-            </div>
-        </div>
-    </body>
+					<noscript>
+						<p class="statictext warning">This page requires that JavaScript be enabled.</p>
+					</noscript>
+					<br/><br/>
+				</div>
+			</div>
+		</div>
+	</body>
 </html>

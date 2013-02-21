@@ -167,6 +167,10 @@ a.alpha, a.lexlink {
 	font-size: large;
 }
 
+a.lexlink {
+	display: block;
+}
+
 a.alpha:link, a.alpha:visited, a.lexlink:link, a.lexlink:visited {
 	color: white;
 }
