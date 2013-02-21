@@ -24,7 +24,7 @@
 	//////
 
 	// If a configuration file already exists, do not continue
-	if(file_exists('cfg/lex_config.php')) {
+	if (file_exists('cfg/lex_config.php')) {
 		die('<p>You already have a configuration file! If you want to change anything, go back and visit the Settings page.</p>');
 	}
 ?>
@@ -51,7 +51,7 @@
 	            <div id="entryview">
                 	<?php
 						// If data was submitted via POST, create a configuration file
-	           			if(isset($_POST['submit'])) {
+	           			if (isset($_POST['submit'])) {
 							// Retrieve variables
 							$servername = $_POST['servername'];
 							$lexDatabase = mysql_real_escape_string($_POST['lex_database']);
@@ -67,32 +67,34 @@
 								echo('<p class="statictext warning">One set of passwords do not match. Go back and recheck.</p>');
 							} else {
 								// Create a string containing the contents of the new configuration file
-								$configContents = "<?php\n\n\$LEX_adminUser = \"" . $admin_user . "\";\n\$LEX_adminPassword = \"" . $admin_pass . "\";\n\$LEX_publicUser = \"" . $public_user . "\";\n\$LEX_publicPassword = \"" . $public_pass . "\";\n\n\$LEX_serverName = \"" . $servername . "\";\n\$LEX_databaseName = \"" . $lexDatabase . "\";\n\n?>\n";
+								$configContents = "<?php\n\n\$LEX_adminUser = \"" . $admin_user . "\";\n\$LEX_adminPassword = \"" . $admin_pass . "\";\n\$LEX_publicUser = \"" . $public_user . "\";\n\$LEX_publicPassword = \"" . $public_pass . "\";\n\n\$LEX_serverName = \"" . $servername . "\";\n\$LEX_databaseName = \"" . $lexDatabase . "\";\n";
 
 								// Open an actual file for writing, or an error if a stream could not be created
-								$configFileHandle = @fopen('cfg/lex_config.php', 'w') or die('<p>Can\'t open file for writing. Check permissions.</p>');
+								$configFileHandle = @fopen('cfg/lex_config.php', 'w') or die('<p>Can\'t open cfg/lex_config.php for writing. Check permissions.</p>');
 								fwrite($configFileHandle, $configContents);
 								fclose($configFileHandle);
 
 								// Open a MySQL connection
-								$dbLink = mysql_connect($servername, $admin_user, $admin_pass);
+								$dbLink = new PDO("mysql:host=$servername;dbname=$lexDatabase", $admin_user, $admin_pass);
 
 								// Create the LexManager database
-								mysql_query("CREATE database `" . $lexDatabase . "`;");
+								// mysql_query("CREATE database `" . $lexDatabase . "`;");
 								echo('<p>The configuration file has been created. You are now ready to create a new lexicon.</p><p><a href="manager.php">Return to LexManager Administration</a></p>');
 
 								// Create a user table and add the administrator account and encrypted password
 								// The password is simply encrypted using MD5; this is not especially secure, but is more than suitable for the purposes of LexManager
-								@mysql_select_db($lexDatabase);
-								$charset = mysql_query("SET NAMES utf8");
-								mysql_query("CREATE TABLE `lex_userinfo` (`Index_ID` int(1) NOT NULL AUTO_INCREMENT, `Name` varchar(255) NOT NULL, `Password` varchar(255) NOT NULL, PRIMARY KEY (`Index_ID`)) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;");
-								mysql_query("INSERT INTO `lex_userinfo` (`Name`, `Password`) VALUES ('" . $lm_username . "', '" . md5($lm_password) . "');");
+								$dbLink->query('SET NAMES utf8');
+								$dbLink->query("CREATE TABLE `lex_userinfo` (`Index_ID` int(1) NOT NULL AUTO_INCREMENT, `Name` varchar(255) NOT NULL, `Password` varchar(255) NOT NULL, PRIMARY KEY (`Index_ID`)) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;");
+								$dbLink->query("INSERT INTO `lex_userinfo` (`Name`, `Password`) VALUES ('" . $lm_username . "', '" . sha1($lm_password) . "');");
 
 								// Start a new session so the user isn't immediately forced to login
 								session_start();
 								$_SESSION['LM_login'] = "1";
 							}
 
+						} elseif (!class_exists('PDO') || !in_array('mysql', PDO::getAvailableDrivers())) {
+							// Make sure the MySQL PDO driver is available
+							echo '<p class="statictext warning">Your server does not appear to support MySQL via PDO. You will not be able to use this product without the MySQL PDO driver.</p>';
 						} else {
 							// If no data was submitted, output the appropriate setup form
                 			echo('
@@ -188,8 +190,3 @@
         </div>
     </body>
 </html>
-
-<?php
-	// Close database connection
-	@mysql_close($dbLink);
-?>
