@@ -50,7 +50,7 @@ function adm_backup() {
 function attachFieldListControls() {
 	$('#addfield')
 		.bind('click', function() {
-			var newField = "<div class=\"fieldcontainer\"><div class=\"onefield\"><table><tr><td><select><option value=\"text\" selected=\"yes\">Basic Text</option><option value=\"rich\">Rich Text</option><option value=\"list\">List</option><option value=\"hidden\">Hidden</option></select></td><td><input type=\"text\" size=\"50\"></td><td><a href=\"#\" class=\"remove_link\">X</a></td></tr></table></div><div class=\"onefield_break\"></div></div>";
+			var newField = "<div class=\"fieldcontainer\"><div class=\"onefield\"><table><tr><td><select><option value=\"text\" selected=\"yes\">Basic Text</option><option value=\"rich\">Rich Text</option><option value=\"list\">List</option><option value=\"hidden\">Hidden</option></select></td><td><input type=\"text\" size=\"50\"></td><td><a href=\"#\" class=\"remove_link\">&times;</a></td></tr></table></div><div class=\"onefield_break\"></div></div>";
 			$('#fields')
 				.append(newField);
 			$('#addfield')
@@ -78,7 +78,7 @@ function makeDragAndDrops() {
 	$('div.fieldcontainer')
 		.not('.idfield')
 		.draggable({containment: '#entryview',
-				    stack: 'div.fieldcontainer',
+					stack: 'div.fieldcontainer',
 					revert: 'invalid'});
 	$('div.onefield_break')
 		.droppable({accept: 'div.fieldcontainer',
@@ -185,7 +185,7 @@ function attachViewLinks() {
 		.bind('click', function() {
 			var datasource = $(this).attr('href');
 			$('#entryview').load(datasource);
-			return false;					
+			return false;
 		});
 }
 

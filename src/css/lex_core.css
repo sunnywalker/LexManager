@@ -146,7 +146,7 @@ body {
 }
 
 #adminnav a:hover {
-	color: yellow;
+	color: #06f;
 	text-decoration: underline;
 }
 
@@ -322,6 +322,14 @@ table.lex_viewall th {
 
 table.lex_displayoptions, table.lex_displayoptions td {
 	border: 0;
+}
+
+.fieldcontainer table {
+	width: 100%;
+}
+
+.fieldcontainer tr td:first-of-type {
+	width: 20%;
 }
 
 /* Divs and ID'd Items */

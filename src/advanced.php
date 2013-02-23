@@ -39,10 +39,10 @@
 	$curLex = htmlspecialchars($lex->Name);
 	$alphabet = $lex->Alphabet;
 ?>
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html>
 	<head>
-    	<title><?php echo($curLex); ?> Lexicon</title>
+    	<title><?php echo $curLex; ?> Lexicon</title>
         <meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<link rel="stylesheet" type="text/css" href="css/lex_core.css">
         <link rel="shortcut icon" type="image/vnd.microsoft.icon" href="images/favicon.ico">
@@ -51,7 +51,7 @@
         <script type="text/javascript" src="js/lex.js"></script>
     </head>
     <body>
-    	<div id="lexindex"><?php echo($lexIndex); ?></div>
+    	<div id="lexindex"><?php echo $lexIndex; ?></div>
     	<div id="content">
         	<div id="topbar">
                 <div id="search">
@@ -68,10 +68,10 @@
 							// Split the alphabet into an array of individual letters, then output the alphabetical navigation
 							$displayBuf = "";
 							$alphabetArray = explode(" ", $alphabet);
-							foreach($alphabetArray as $letter) {
+							foreach ($alphabetArray as $letter) {
 								$displayBuf .= "<td><a href=\"./?i=" . $lexIndex . "\" class=\"alpha\">" . htmlspecialchars($letter) . "</a></td>";
 							}
-							echo($displayBuf . "\n");
+							echo $displayBuf . "\n";
                     	?>
                     </tr>
                 </table>

@@ -67,7 +67,7 @@
 				<div id="entryview">
 					<?php
 						// Show error message if login failed
-						if (@$loginFailed) {
+						if (isset($loginFailed) && $loginFailed) {
 							echo "<p class=\"statictext warning\">Error: Incorrect username or password.</p>\n";
 						}
 					?>

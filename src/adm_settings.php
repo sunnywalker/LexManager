@@ -27,7 +27,7 @@
 <!DOCTYPE HTML>
 <html>
 	<head>
-		<title>LexManager Administration</title>
+		<title>LexManager Settings</title>
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<link rel="stylesheet" type="text/css" href="css/lex_core.css">
 		<link rel="shortcut icon" type="image/vnd.microsoft.icon" href="images/favicon.ico">
@@ -37,33 +37,10 @@
 	</head>
 	<body>
 		<div id="content">
-			<div id="topbar">
-				<a href="manager.php" class="title">Administration</a><br/>
-				<div id="adminnav">
-					<p>• <a href="manager.php">Admin Home</a></p>
-					<p>• <a href="adm_newlexicon.php">New Lexicon</a></p>
-					<p>• <a href="adm_backup.php">Backup Lexicons</a></p>
-					<p>• <a href="adm_logout.php">Logout</a></p>
-				</div>
-			</div>
+			<?php include '_topbar_admin.php'; ?>
 			<div id="main">
 				<div id="leftbar">
-					<?php
-						// Retrieve list of available lexicons
-						$queryReply = $dbLink->query("SELECT `Index_ID`, `Name` FROM `lexinfo` ORDER BY `Name`;");
-						$numTables = $dbLink->query("SELECT FOUND_ROWS()")->fetchColumn();
-						$displayBuf = "";
-
-						// Display list of lexicons with links to their individual administration pages
-						if (!$numTables) {
-							echo "<p>No lexicons found.</p>\n";
-						} else {
-							while ($lang = $queryReply->fetch(PDO::FETCH_OBJ)) {
-								$displayBuf .= "<p><a href=\"adm_viewlex.php?i=" . $lang->Index_ID . "\" class=\"lexlink\">" . htmlspecialchars($lang->Name) . "</a></p>\n";
-							}
-							echo $displayBuf;
-						}
-					?>
+					<?php echo getLexiconList($dbLink, 'adm_viewlex.php'); ?>
 				</div>
 				<div id="entryview">
 					<p class="statictext">Here you can configure database and webapp settings and modify themes.</p>

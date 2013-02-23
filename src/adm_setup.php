@@ -85,7 +85,6 @@
 
 								// Create a user table and add the administrator account and encrypted password
 								// The password is simply encrypted using MD5; this is not especially secure, but is more than suitable for the purposes of LexManager
-								$dbLink->query('SET NAMES utf8');
 								$dbLink->query("CREATE TABLE `lex_userinfo` (`Index_ID` int(1) NOT NULL AUTO_INCREMENT, `Name` varchar(255) NOT NULL, `Password` varchar(255) NOT NULL, PRIMARY KEY (`Index_ID`)) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;");
 								$insertSQL = $dbLink->prepare("INSERT INTO `lex_userinfo` (`Name`, `Password`) VALUES (:lm_username, :lm_password);");
 								$dbLink->execute(array(':lm_username'=>$lm_username, ':lm_password'=>sha1($lm_password)));
@@ -100,25 +99,25 @@
 							echo '<p class="statictext warning">Your server does not appear to support MySQL via PDO. You will not be able to use this product without the MySQL PDO driver.</p>';
 						} else {
 							// If no data was submitted, output the appropriate setup form
-							echo '
+						?>
 								<p class="statictext">Welcome to LexManager!</p>
-								<p class="statictext">Just fill out the following information and a LexManager configuration file will be created for you. Then you\'ll be able to get started using LexManager right away!</p>
+								<p class="statictext">Just fill out the following information and a LexManager configuration file will be created for you. Then you'll be able to get started using LexManager right away!</p>
 								<form id="config_form" action="adm_setup.php" method="post">
 									<fieldset>
 										<legend>Database Information</legend>
 										<p>This information concerns the MySQL instance that LexManager will use to store information.
-										<p>In the following field, enter the name of the server hosting MySQL. If you do not know, contact your hosting provider. If you are running LexManager on your own machine, try using \'localhost\'.</p>
+										<p>In the following field, enter the name of the server hosting MySQL. If you do not know, contact your hosting provider. If you are running LexManager on your own machine, try using 'localhost'.</p>
 										<table>
 											<tr>
 												<td><label for="servername">Server Name:</label></td>
-												<td><input type="text" name="servername" size="50"></td>
+												<td><input type="text" name="servername" size="50" placeholder="host name"></td>
 											</tr>
 										</table>
-										<p>Below, enter what you would like the LexManager database to be called. \'Lexicons\' is the default name, but you may change this if you already have a database with that name or just would prefer to use something else.</p>
+										<p>Below, enter what you would like the LexManager database to be called. 'Lexicons' is the default name, but you may change this if you already have a database with that name or just would prefer to use something else.</p>
 										<table>
 											<tr>
 												<td><label for="lex_database">LexManager Database:</label></td>
-												<td><input type="text" name="lex_database" size="50" value="lexicons"></td>
+												<td><input type="text" name="lex_database" size="50" value="lexicons" placeholder="database name"></td>
 											</tr>
 										</table>
 									</fieldset>
@@ -128,48 +127,46 @@
 										<table>
 											<tr>
 												<td><label for="admin_user">Administrator Username:</label></td>
-												<td><input type="text" name="admin_user" size="50"></td>
+												<td><input type="text" name="admin_user" size="50" placeholder="admin username"></td>
 											</tr>
 											<tr>
 												<td><label for="admin_pass">Administrator Password:</label></td>
-												<td><input type="text" name="admin_pass" size="50"></td>
+												<td><input type="text" name="admin_pass" size="50" placeholder="admin password"></td>
 											</tr>
 										</table>
 									</fieldset>
 									<fieldset>
 										<legend>MySQL Anonymous User Access</legend>
-										<p>Enter the login information for the MySQL account that will be used by anonymous users (the Internet as a whole) to access the public-facing portions of LexManager. This account is needed for other people to view your lexicons. While you may use the same credentials as in the previous section, this is <strong>strongly</strong> discouraged.</p>
+										<p>Enter the login information for the MySQL account that will be used by anonymous users (the Internet as a whole) to access the public-facing portions of LexManager. This account is needed for other people to view your lexicons. While you may use the same credentials as in the previous section, this is <strong>strongly discouraged</strong>.</p>
 										<table>
 											<tr>
 												<td><label for="admin_user">Anonymous Username:</label></td>
-												<td><input type="text" name="public_user" size="50"></td>
+												<td><input type="text" name="public_user" size="50" placeholder="public username"></td>
 											</tr>
 											<tr>
 												<td><label for="admin_pass">Anonymous Password:</label></td>
-												<td><input type="text" name="public_pass" size="50"></td>
+												<td><input type="text" name="public_pass" size="50" placeholder="public password"></td>
 											</tr>
 										</table>
 									</fieldset>
 									<fieldset>
 										<legend>LexManager Administrator Access</legend>
-										<p>To keep anyone from accessing the LexManager administration pages (where you are now), you need to set up a personal LexManager account. This username and password will be used to log-in and let you make changes.</p>
+										<p>To keep anyone from accessing the LexManager administration pages (where you are now), you need to set up a personal LexManager account. This username and password will be used to log in and let you make changes.</p>
 										<table>
 											<tr>
 												<td><label for="lm_username">Username:</label></td>
-												<td><input type="text" name="lm_username" size="50"></td>
+												<td><input type="text" name="lm_username" size="50" placeholder="admin username"></td>
 											</tr>
 											<tr>
 												<td><label for="lm_password">Password:</label></td>
-												<td><input type="text" name="lm_password" size="50"></td>
+												<td><input type="text" name="lm_password" size="50" placeholder="admin password"></td>
 											</tr>
 										</table>
 									</fieldset>
-									<p>Clicking \'Create\' will generate a configuration file and build the necessary databases.</p>
+									<p>Clicking 'Create' will generate the configuration file and build the necessary databases.</p>
 									<input type="submit" name="submit" value="Create">
 								</form>
-							';
-						}
-					?>
+						<?php } // end if-else ?>
 
 
 					<noscript>
